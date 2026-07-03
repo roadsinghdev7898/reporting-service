@@ -118,12 +118,6 @@ type Page struct {
 	HasNext  bool `json:"has_next"`
 }
 
-type ExportFormat struct {
-	Name        string
-	ContentType string
-	Extension   string
-}
-
 func (t ReportTemplate) Validate() error {
 	if t.Code == "" || t.BaseTable == "" || t.BaseAlias == "" {
 		return fmt.Errorf("%w: code, base_table, and base_alias are required", ErrInvalidTemplate)

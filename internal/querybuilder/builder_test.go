@@ -93,6 +93,23 @@ func TestBuildCapsPageSize(t *testing.T) {
 	}
 }
 
+func TestBuildExportModeUsesOnlyExportableColumns(t *testing.T) {
+	template := sampleTemplate()
+	template.Columns[1].Exportable = false
+
+	query, err := Build(BuildOptions{
+		Template:    template,
+		ExportMode:  true,
+		MaxPageSize: 100,
+	})
+	if err != nil {
+		t.Fatalf("Build returned error: %v", err)
+	}
+	if strings.Contains(query.SQL, `student_name`) {
+		t.Fatalf("export query should exclude non-exportable column: %s", query.SQL)
+	}
+}
+
 func sampleTemplate() domain.ReportTemplate {
 	return domain.ReportTemplate{
 		Code:      "submission_summary",
@@ -100,10 +117,10 @@ func sampleTemplate() domain.ReportTemplate {
 		BaseTable: "submissions",
 		BaseAlias: "s",
 		Columns: []domain.Column{
-			{Key: "submission_id", Expression: "s.id", Alias: "submission_id", Visible: true, Sortable: true, Position: 1},
-			{Key: "student_name", Expression: "u.full_name", Alias: "student_name", Visible: true, Sortable: true, Position: 2},
-			{Key: "status", Expression: "s.status", Alias: "status", Visible: true, Sortable: true, Position: 3},
-			{Key: "score", Expression: "e.score", Alias: "score", Visible: true, Sortable: true, Position: 4},
+			{Key: "submission_id", Expression: "s.id", Alias: "submission_id", Visible: true, Sortable: true, Exportable: true, Position: 1},
+			{Key: "student_name", Expression: "u.full_name", Alias: "student_name", Visible: true, Sortable: true, Exportable: true, Position: 2},
+			{Key: "status", Expression: "s.status", Alias: "status", Visible: true, Sortable: true, Exportable: true, Position: 3},
+			{Key: "score", Expression: "e.score", Alias: "score", Visible: true, Sortable: true, Exportable: true, Position: 4},
 		},
 		Joins: []domain.Join{
 			{JoinType: "LEFT", Table: "users", Alias: "u", On: "u.id = s.student_id", Position: 1},

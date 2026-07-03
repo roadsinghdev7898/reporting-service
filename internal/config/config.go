@@ -16,7 +16,6 @@ type Config struct {
 	DBMaxIdleConns    int
 	DBConnMaxLifetime time.Duration
 	MaxPageSize       int
-	ExportFetchSize   int
 }
 
 func Load() Config {
@@ -28,7 +27,6 @@ func Load() Config {
 		DBMaxIdleConns:    envInt("DB_MAX_IDLE_CONNS", 10),
 		DBConnMaxLifetime: time.Duration(envInt("DB_CONN_MAX_LIFETIME_MINUTES", 30)) * time.Minute,
 		MaxPageSize:       envInt("MAX_PAGE_SIZE", 500),
-		ExportFetchSize:   envInt("EXPORT_FETCH_SIZE", 1000),
 	}
 }
 

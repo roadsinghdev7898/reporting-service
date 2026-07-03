@@ -12,12 +12,11 @@ import (
 var safeSQLFragment = regexp.MustCompile(`^[a-zA-Z0-9_."()\s,+\-*/:<>=]+$`)
 
 type BuildOptions struct {
-	Template        domain.ReportTemplate
-	Request         domain.ReportRequest
-	IncludePaging   bool
-	IncludeCount    bool
-	MaxPageSize     int
-	ExportFetchSize int
+	Template      domain.ReportTemplate
+	Request       domain.ReportRequest
+	IncludePaging bool
+	ExportMode    bool
+	MaxPageSize   int
 }
 
 type Query struct {
@@ -37,7 +36,10 @@ func Build(opts BuildOptions) (Query, error) {
 	}
 
 	page, pageSize := normalizePage(opts.Request.Page, opts.Request.PageSize, opts.MaxPageSize)
-	selectedColumns := visibleColumns(t.Columns)
+	selectedColumns := selectedColumns(t.Columns, opts.ExportMode)
+	if len(selectedColumns) == 0 {
+		return Query{}, fmt.Errorf("%w: no report columns are available", domain.ErrInvalidTemplate)
+	}
 	columnAliases := make([]string, 0, len(selectedColumns))
 	selectParts := make([]string, 0, len(selectedColumns))
 	for _, c := range selectedColumns {
@@ -211,12 +213,16 @@ func buildSort(columns []domain.Column, requested []domain.Sort, defaults []doma
 	return strings.Join(parts, ", "), nil
 }
 
-func visibleColumns(columns []domain.Column) []domain.Column {
+func selectedColumns(columns []domain.Column, exportMode bool) []domain.Column {
 	out := make([]domain.Column, 0, len(columns))
 	for _, column := range columns {
-		if column.Visible {
-			out = append(out, column)
+		if !column.Visible {
+			continue
 		}
+		if exportMode && !column.Exportable {
+			continue
+		}
+		out = append(out, column)
 	}
 	slices.SortFunc(out, func(a, b domain.Column) int { return a.Position - b.Position })
 	return out

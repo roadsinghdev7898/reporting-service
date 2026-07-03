@@ -26,7 +26,7 @@ Runtime request flow:
 
 ## Database Schema
 
-Run [migrations/001_report_templates.sql](/home/developer/gradeflow/reporting-service/migrations/001_report_templates.sql) against the reporting database.
+Run `migrations/001_report_templates.sql` against the reporting database.
 
 Tables:
 
@@ -131,7 +131,7 @@ CSV uses Go's standard `encoding/csv`.
 
 Excel uses `github.com/xuri/excelize/v2`.
 
-The use case exposes a common exporter registry so more formats can be added without touching HTTP handlers or query building.
+The use case exposes a common exporter registry so more formats can be added without touching HTTP handlers or query building. Export output uses columns marked visible and exportable in the template.
 
 ## Error Handling And Logging
 
@@ -166,7 +166,6 @@ Environment variables:
 | `DB_MAX_IDLE_CONNS` | `10` |
 | `DB_CONN_MAX_LIFETIME_MINUTES` | `30` |
 | `MAX_PAGE_SIZE` | `500` |
-| `EXPORT_FETCH_SIZE` | `1000` |
 
 ## Local Development
 

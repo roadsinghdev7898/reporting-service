@@ -12,20 +12,18 @@ import (
 )
 
 type ReportService struct {
-	templates       domain.TemplateRepository
-	data            domain.DataRepository
-	exporters       export.Registry
-	maxPageSize     int
-	exportFetchSize int
+	templates   domain.TemplateRepository
+	data        domain.DataRepository
+	exporters   export.Registry
+	maxPageSize int
 }
 
-func NewReportService(templates domain.TemplateRepository, data domain.DataRepository, exporters export.Registry, maxPageSize, exportFetchSize int) *ReportService {
+func NewReportService(templates domain.TemplateRepository, data domain.DataRepository, exporters export.Registry, maxPageSize int) *ReportService {
 	return &ReportService{
-		templates:       templates,
-		data:            data,
-		exporters:       exporters,
-		maxPageSize:     maxPageSize,
-		exportFetchSize: exportFetchSize,
+		templates:   templates,
+		data:        data,
+		exporters:   exporters,
+		maxPageSize: maxPageSize,
 	}
 }
 
@@ -74,11 +72,10 @@ func (s *ReportService) Export(ctx context.Context, code, format string, req dom
 	}
 
 	query, err := querybuilder.Build(querybuilder.BuildOptions{
-		Template:        template,
-		Request:         req,
-		IncludePaging:   false,
-		MaxPageSize:     s.maxPageSize,
-		ExportFetchSize: s.exportFetchSize,
+		Template:    template,
+		Request:     req,
+		ExportMode:  true,
+		MaxPageSize: s.maxPageSize,
 	})
 	if err != nil {
 		return "", "", nil, err

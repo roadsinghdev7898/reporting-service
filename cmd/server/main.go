@@ -49,7 +49,7 @@ func main() {
 		"xlsx": export.NewExcelExporter(),
 	}
 
-	reportSvc := usecase.NewReportService(templateRepo, dataRepo, exporters, cfg.MaxPageSize, cfg.ExportFetchSize)
+	reportSvc := usecase.NewReportService(templateRepo, dataRepo, exporters, cfg.MaxPageSize)
 	router := reporthttp.NewRouter(reportSvc, logger)
 
 	server := &http.Server{

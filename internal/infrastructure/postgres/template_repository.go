@@ -33,10 +33,14 @@ func (r *TemplateRepository) GetByCode(ctx context.Context, code string) (domain
 		return domain.ReportTemplate{}, err
 	}
 	if len(defaultSortJSON) > 0 {
-		_ = json.Unmarshal(defaultSortJSON, &template.DefaultSort)
+		if err := json.Unmarshal(defaultSortJSON, &template.DefaultSort); err != nil {
+			return domain.ReportTemplate{}, fmt.Errorf("%w: invalid default_sort for %q", domain.ErrInvalidTemplate, code)
+		}
 	}
 	if len(defaultGroupJSON) > 0 {
-		_ = json.Unmarshal(defaultGroupJSON, &template.DefaultGroupBy)
+		if err := json.Unmarshal(defaultGroupJSON, &template.DefaultGroupBy); err != nil {
+			return domain.ReportTemplate{}, fmt.Errorf("%w: invalid default_group_by for %q", domain.ErrInvalidTemplate, code)
+		}
 	}
 
 	columns, err := r.columns(ctx, template.ID)
